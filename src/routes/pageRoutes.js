@@ -1,17 +1,17 @@
 const express = require('express')
-const { getCurrentBranch } = require('../services/gitService')
+const { getLauncherStatus } = require('../services/statusService')
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-  const hostMachineIp = process.env.HOST_MACHINE_IP || '10.77.3.32'
+  const status = getLauncherStatus()
 
   res.render('index', {
-    title: 'AVIEW Launcher',
-    currentBranch: getCurrentBranch(),
-    buildStatus: 'idle',
-    appStatus: 'stopped',
-    appUrl: `http://${hostMachineIp}`
+    title: 'AView Launcher',
+    currentBranch: status.currentBranch,
+    buildStatus: status.buildStatus,
+    appStatus: status.appStatus,
+    appUrl: status.appUrl
   })
 })
 

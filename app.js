@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 
 const pageRoutes = require('./src/routes/pageRoutes')
 const gitRoutes = require('./src/routes/gitRoutes')
+const statusRoutes = require('./src/routes/statusRoutes')
 
 dotenv.config()
 
@@ -24,6 +25,7 @@ app.set('view engine', 'ejs')
 
 app.use('/', pageRoutes)
 app.use('/api', gitRoutes)
+app.use('/api', statusRoutes);
 
 // 서버 시작
 app.listen(port, '0.0.0.0', () => {

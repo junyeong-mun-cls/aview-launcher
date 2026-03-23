@@ -82,3 +82,9 @@ pre {
     min-height: 220px;
     overflow: auto;
 }
+
+#log-box {
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
