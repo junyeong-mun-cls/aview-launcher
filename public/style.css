@@ -79,8 +79,16 @@ pre {
     color: #e2e8f0;
     padding: 16px;
     border-radius: 8px;
-    min-height: 220px;
-    overflow: auto;
+
+    height: 250px;
+    /* 고정 높이 */
+    overflow-y: auto;
+    /* 세로 스크롤 */
+    overflow-x: auto;
+    /* 가로도 필요하면 */
+
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 #log-box {

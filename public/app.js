@@ -1,8 +1,16 @@
 const logBox = document.getElementById('log-box');
 
 function log(message) {
-  const now = new Date().toLocaleTimeString();
-  logBox.textContent += `\n[${now}] ${message}`;
+    const now = new Date().toLocaleTimeString();
+    logBox.textContent += `\n[${now}] ${message}`;
+  
+    // 최대 줄 수 제한 (예: 200줄)
+    const lines = logBox.textContent.split('\n');
+    if (lines.length > 200) {
+      logBox.textContent = lines.slice(-200).join('\n');
+    }
+  
+    logBox.scrollTop = logBox.scrollHeight;
 }
 
 function updateStatusUI(status) {
@@ -86,6 +94,10 @@ document.getElementById('start-btn').addEventListener('click', () => {
 
 document.getElementById('stop-btn').addEventListener('click', () => {
   log('Stop clicked.');
+});
+
+document.getElementById('clear-log-btn').addEventListener('click', () => {
+    logBox.textContent = '';
 });
 
 // 페이지 처음 열릴 때 상태 1번 가져오기
