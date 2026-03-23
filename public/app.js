@@ -1,107 +1,97 @@
-const logBox = document.getElementById('log-box');
+// 버튼 이벤트 연결, 초기화
 
-function log(message) {
-    const now = new Date().toLocaleTimeString();
-    logBox.textContent += `\n[${now}] ${message}`;
-  
-    // 최대 줄 수 제한 (예: 200줄)
-    const lines = logBox.textContent.split('\n');
-    if (lines.length > 200) {
-      logBox.textContent = lines.slice(-200).join('\n');
-    }
-  
-    logBox.scrollTop = logBox.scrollHeight;
+function getBranchInputValue() {
+    const branchInput = document.getElementById("branch");
+    return branchInput ? branchInput.value.trim() : "";
 }
 
-function updateStatusUI(status) {
-    const currentBranchEl = document.getElementById('current-branch');
-    const buildStatusEl = document.getElementById('build-status');
-    const appStatusEl = document.getElementById('app-status');
-    const appUrlEl = document.getElementById('app-url');
-  
-    if (currentBranchEl) currentBranchEl.textContent = status.currentBranch || 'unknown';
-    if (buildStatusEl) buildStatusEl.textContent = status.buildStatus || 'idle';
-    if (appStatusEl) appStatusEl.textContent = status.appStatus || 'stopped';
-  
-    if (appUrlEl && status.appUrl) {
-      appUrlEl.textContent = status.appUrl;
-      appUrlEl.href = status.appUrl;
-    }
-}
+async function handleSwitchPullClick() {
+    const branch = getBranchInputValue();
 
-async function refreshStatus() {
-    try {
-      const response = await fetch('/api/status');
-      const result = await response.json();
-  
-      if (!response.ok || !result.ok) {
-        log(`Failed to refresh status: ${result.message || 'Unknown error'}`);
+    if (!branch) {
+        window.Logger.log("Please enter a branch name.");
         return;
-      }
-  
-      updateStatusUI(result);
+    }
+
+    window.Logger.log(`Switch & Pull started. branch="${branch}"`);
+
+    try {
+        const result = await window.Api.switchPull(branch);
+
+        if (!result.ok || !result.data.ok) {
+            window.Logger.log(
+                `Failed: ${result.data.message || "Unknown error"}`,
+            );
+
+            if (result.data.stderr) {
+                window.Logger.log(`stderr:\n${result.data.stderr}`);
+            }
+
+            if (result.data.stdout) {
+                window.Logger.log(`stdout:\n${result.data.stdout}`);
+            }
+
+            return;
+        }
+
+        window.Logger.log(result.data.message);
+
+        if (result.data.switch?.stdout) {
+            window.Logger.log(`switch stdout:\n${result.data.switch.stdout}`);
+        }
+
+        if (result.data.switch?.stderr) {
+            window.Logger.log(`switch stderr:\n${result.data.switch.stderr}`);
+        }
+
+        if (result.data.pull?.stdout) {
+            window.Logger.log(`pull stdout:\n${result.data.pull.stdout}`);
+        }
+
+        if (result.data.pull?.stderr) {
+            window.Logger.log(`pull stderr:\n${result.data.pull.stderr}`);
+        }
+
+        await window.Status.refreshStatus();
     } catch (error) {
-      log(`Status request error: ${error.message}`);
+        window.Logger.log(`Request error: ${error.message}`);
     }
 }
 
-document.getElementById('switch-pull-btn').addEventListener('click', async () => {
-  const branch = document.getElementById('branch').value.trim();
+function handleBuildClick() {
+    window.Logger.log("Build clicked.");
+}
 
-  if (!branch) {
-    log('Please enter a branch name.');
-    return;
-  }
+function handleStartClick() {
+    window.Logger.log("Start clicked.");
+}
 
-  log(`Switch & Pull started. branch="${branch}"`);
+function handleStopClick() {
+    window.Logger.log("Stop clicked.");
+}
 
-  try {
-    const response = await fetch('/api/switch-pull', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ branch }),
-    });
+function bindEvents() {
+    document
+        .getElementById("switch-pull-btn")
+        ?.addEventListener("click", handleSwitchPullClick);
+    document
+        .getElementById("build-btn")
+        ?.addEventListener("click", handleBuildClick);
+    document
+        .getElementById("start-btn")
+        ?.addEventListener("click", handleStartClick);
+    document
+        .getElementById("stop-btn")
+        ?.addEventListener("click", handleStopClick);
+    document
+        .getElementById("clear-log-btn")
+        ?.addEventListener("click", window.Logger.clearLog);
+}
 
-    const result = await response.json();
+function init() {
+    bindEvents();
+    window.Status.refreshStatus();
+    setInterval(window.Status.refreshStatus, 5000);
+}
 
-    if (!response.ok) {
-      log(`Failed: ${result.message || 'Unknown error'}`);
-      if (result.stderr) log(`stderr:\n${result.stderr}`);
-      if (result.stdout) log(`stdout:\n${result.stdout}`);
-      return;
-    }
-
-    log(result.message);
-
-    if (result.switch?.stdout) log(`switch stdout:\n${result.switch.stdout}`);
-    if (result.switch?.stderr) log(`switch stderr:\n${result.switch.stderr}`);
-    if (result.pull?.stdout) log(`pull stdout:\n${result.pull.stdout}`);
-    if (result.pull?.stderr) log(`pull stderr:\n${result.pull.stderr}`);
-  } catch (error) {
-    log(`Request error: ${error.message}`);
-  }
-});
-
-document.getElementById('build-btn').addEventListener('click', () => {
-  log('Build clicked.');
-});
-
-document.getElementById('start-btn').addEventListener('click', () => {
-  log('Start clicked.');
-});
-
-document.getElementById('stop-btn').addEventListener('click', () => {
-  log('Stop clicked.');
-});
-
-document.getElementById('clear-log-btn').addEventListener('click', () => {
-    logBox.textContent = '';
-});
-
-// 페이지 처음 열릴 때 상태 1번 가져오기
-refreshStatus();
-
-// 5초마다 상태 자동 새로고침
-setInterval(refreshStatus, 5000);
+init();

@@ -1,71 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= title %></title>
+        <link rel="stylesheet" href="/style.css" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-        <%= title %>
-    </title>
-    <link rel="stylesheet" href="/style.css" />
-</head>
+    <body>
+        <div class="container">
+            <h1>AVIEW Launcher</h1>
+            <p class="subtitle">Simple branch / build / start tool</p>
 
-<body>
-    <div class="container">
-        <h1>AVIEW Launcher</h1>
-        <p class="subtitle">Simple branch / build / start tool</p>
+            <section class="card">
+                <h2>Status</h2>
+                <div class="status-row">
+                    <span>Current Branch</span>
+                    <strong id="current-branch"> <%= currentBranch %> </strong>
+                </div>
+                <div class="status-row">
+                    <span>Build Status</span>
+                    <strong id="build-status"> <%= buildStatus %> </strong>
+                </div>
+                <div class="status-row">
+                    <span>App Status</span>
+                    <strong id="app-status"> <%= appStatus %> </strong>
+                </div>
+                <div class="status-row">
+                    <span>App URL</span>
+                    <a id="app-url" href="<%= appUrl %>" target="_blank">
+                        <%= appUrl %>
+                    </a>
+                </div>
+            </section>
 
-        <section class="card">
-            <h2>Status</h2>
-            <div class="status-row">
-                <span>Current Branch</span>
-                <strong id="current-branch">
-                    <%= currentBranch %>
-                </strong>
-            </div>
-            <div class="status-row">
-                <span>Build Status</span>
-                <strong id="build-status">
-                    <%= buildStatus %>
-                </strong>
-            </div>
-            <div class="status-row">
-                <span>App Status</span>
-                <strong id="app-status">
-                    <%= appStatus %>
-                </strong>
-            </div>
-            <div class="status-row">
-                <span>App URL</span>
-                <a id="app-url" href="<%= appUrl %>" target="_blank">
-                    <%= appUrl %>
-                </a>
-            </div>
-        </section>
+            <section class="card">
+                <h2>Controls</h2>
+                <div class="form-row">
+                    <label for="branch">Branch</label>
+                    <input
+                        id="branch"
+                        type="text"
+                        placeholder="e.g. develop or feature/login"
+                    />
+                </div>
 
-        <section class="card">
-            <h2>Controls</h2>
-            <div class="form-row">
-                <label for="branch">Branch</label>
-                <input id="branch" type="text" placeholder="e.g. develop or feature/login" />
-            </div>
+                <div class="button-row">
+                    <button id="switch-pull-btn">Switch & Pull</button>
+                    <button id="build-btn">Build</button>
+                    <button id="start-btn">Start</button>
+                    <button id="stop-btn">Stop</button>
+                </div>
+            </section>
 
-            <div class="button-row">
-                <button id="switch-pull-btn">Switch & Pull</button>
-                <button id="build-btn">Build</button>
-                <button id="start-btn">Start</button>
-                <button id="stop-btn">Stop</button>
-            </div>
-        </section>
+            <section class="card">
+                <h2>Logs</h2>
+                <button id="clear-log-btn">Clear</button>
+                <pre id="log-box">Ready.</pre>
+            </section>
+        </div>
 
-        <section class="card">
-            <h2>Logs</h2>
-            <button id="clear-log-btn">Clear</button>
-            <pre id="log-box">Ready.</pre>
-        </section>
-    </div>
-
-    <script src="/app.js"></script>
-</body>
-
+        <script src="/logger.js"></script>
+        <script src="/api.js"></script>
+        <script src="/status.js"></script>
+        <script src="/app.js"></script>
+    </body>
 </html>
