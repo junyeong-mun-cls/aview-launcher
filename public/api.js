@@ -35,9 +35,33 @@ async function fetchBuildLogs() {
     return requestJson("/api/build/logs");
 }
 
+async function startApp() {
+    return requestJson("/api/app/start", {
+        method: "POST",
+    });
+}
+
+async function stopApp() {
+    return requestJson("/api/app/stop", {
+        method: "POST",
+    });
+}
+
+async function fetchAppStatus() {
+    return requestJson("/api/app/status");
+}
+
+async function fetchAppLogs() {
+    return requestJson("/api/app/logs");
+}
+
 window.Api = {
     fetchStatus,
     switchPull,
     startBuild,
     fetchBuildLogs,
+    startApp,
+    stopApp,
+    fetchAppStatus,
+    fetchAppLogs,
 };

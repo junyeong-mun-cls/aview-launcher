@@ -65,6 +65,14 @@
 
             <section class="card">
                 <div class="section-header">
+                    <h2>App Log</h2>
+                    <button id="clear-app-log-btn" type="button">Clear</button>
+                </div>
+                <pre id="app-log-box"></pre>
+            </section>
+
+            <section class="card">
+                <div class="section-header">
                     <h2>Build Log</h2>
                     <button id="clear-build-log-btn" type="button">
                         Clear
@@ -75,6 +83,7 @@
         </div>
 
         <script src="/logger.js"></script>
+        <script src="/appLogger.js"></script>
         <script src="/buildLogger.js"></script>
         <script src="/api.js"></script>
         <script src="/status.js"></script>

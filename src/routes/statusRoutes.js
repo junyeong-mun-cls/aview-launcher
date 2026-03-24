@@ -1,8 +1,22 @@
-const express = require('express')
-const { getStatus } = require('../controllers/statusController')
+const express = require("express");
+const {
+    getStatus,
+    switchAndPull,
+    startAppController,
+    stopAppController,
+    getAppStatusController,
+    getAppLogsController,
+} = require("../controllers/statusController");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get('/status', getStatus)
+router.get("/status", getStatus);
 
-module.exports = router
+router.post("/switch-pull", switchAndPull);
+
+router.post("/app/start", startAppController);
+router.post("/app/stop", stopAppController);
+router.get("/app/status", getAppStatusController);
+router.get("/app/logs", getAppLogsController);
+
+module.exports = router;

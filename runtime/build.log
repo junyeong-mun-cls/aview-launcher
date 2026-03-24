@@ -1,33 +1,7 @@
 [main] Building folder: /cls/ws/dng6/build
 [build] Starting build
 [proc] Executing command: /usr/bin/cmake --build /cls/ws/dng6/build --config Release --target all -j 80 --
-[1/28] Copying 'dng-config/reading/libs/translation.py' to 'config/reading' folder...
-[2/28] Copying 'dng-res/locale/it-IT.json' to 'resource/locale' folder...
-[3/28] Copying 'dng-res/locale/en-US.json' to 'resource/locale' folder...
-[4/28] Copying 'dng-res/locale/de-DE.json' to 'resource/locale' folder...
-[5/28] Copying 'dng-res/locale/zh-TW.json' to 'resource/locale' folder...
-[6/28] Copying 'dng-res/locale/zh-CN.json' to 'resource/locale' folder...
-[7/28] Copying 'dng-config/reading/libs/nodule.py' to 'config/reading' folder...
-[8/28] Copying 'dng-res/locale/ko-KR.json' to 'resource/locale' folder...
-[9/28] Copying 'dng-res/locale/fr-FR.json' to 'resource/locale' folder...
-[10/28] Always generating commit-id and datetime.
-[11/28] Running utility command for dng-config-log4cxx
-[12/28] Building CXX object dng-cpp/dng_modules/lungca/dngLCS4/CMakeFiles/dngLCS4.dir/src/DlgApplyCADOption.cpp.o
-[13/28] Building CXX object dng-cpp/dng_modules/lungca/dngLCS4/CMakeFiles/dngLCS4_Test.dir/src/DlgApplyCADOption.cpp.o
-[14/28] Linking CXX executable bin/dngLCS4_Test.exe
-[15/28] Linking CXX shared library lib/libdngLCS4.so
-[16/28] Linking CXX executable bin/apsHL7Sender_AuNLCSP.exe
-[17/28] Linking CXX executable bin/apsInsightPN.exe
-[18/28] Linking CXX executable bin/apsSrGenAuNLCSP.exe
-[19/28] Linking CXX executable bin/apsLungNodule.exe
-[20/28] Building CXX object dng-cpp/dng_modules/cv/dngCAC/CMakeFiles/dngCAC.dir/src/CAC_UI_UpdateHelper.cpp.o
-[21/28] Building CXX object dng-cpp/dng_modules/cv/dngCAC/CMakeFiles/dngCAC_Test.dir/src/CAC_UI_UpdateHelper.cpp.o
-[22/28] Linking CXX shared library lib/libdngCAC.so
-[23/28] Linking CXX executable bin/dng4Stor2Dcm.exe
-[24/28] Linking CXX executable bin/apsSrGen.exe
-[25/28] Linking CXX executable bin/apsCAC.exe
-[26/28] Linking CXX executable bin/apsResultSender_Au_LungScreenGroup.exe
-[27/28] Linking CXX executable bin/StandardSet_Tester.exe
-[28/28] Linking CXX executable bin/dngCAC_Test.exe
+[1/2] Always generating commit-id and datetime.
+[2/2] Running utility command for dng-config-log4cxx
 [driver] Build completed with exit code 0
 [build] Build finished with exit code 0

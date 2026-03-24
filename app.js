@@ -3,7 +3,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 
 const pageRoutes = require("./src/routes/pageRoutes");
-const gitRoutes = require("./src/routes/gitRoutes");
 const statusRoutes = require("./src/routes/statusRoutes");
 const buildRoutes = require("./src/routes/buildRoutes");
 
@@ -24,7 +23,6 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use("/", pageRoutes);
-app.use("/api", gitRoutes);
 app.use("/api", statusRoutes);
 app.use("/api", buildRoutes);
 

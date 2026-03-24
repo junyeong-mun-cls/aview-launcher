@@ -1,5 +1,6 @@
 let buildLogIntervalId = null;
 let statusWatchIntervalId = null;
+let appLogIntervalId = null;
 
 function getBranchInputValue() {
     const branchInput = document.getElementById("branch");
@@ -58,22 +59,17 @@ async function refreshStatus() {
     try {
         const result = await window.Api.fetchStatus();
 
-        if (!result.ok || !result.data.ok) {
-            window.Logger.log(
-                `Failed to refresh status: ${result.data.message || "Unknown error"}`,
-            );
-            return;
-        }
+        if (!result.ok || !result.data.ok) return;
 
         window.Status.updateStatusUI(result.data);
+
         updateButtonsByStatus(result.data);
 
-        if (result.data.buildStatus !== "building") {
-            stopBuildLogPolling();
+        // 🔥 여기 추가
+        if (result.data.appStatus !== "running") {
+            stopAppLogPolling();
         }
-    } catch (error) {
-        window.Logger.log(`Status request error: ${error.message}`);
-    }
+    } catch {}
 }
 
 function startStatusWatch() {
@@ -182,14 +178,97 @@ async function handleBuildClick() {
     }
 }
 
-function handleStartClick() {
-    window.Logger.log("Start clicked.");
+async function handleStartClick() {
+    window.Logger.log("App start requested.");
+    window.AppLogger.clear();
+
+    try {
+        const result = await window.Api.startApp();
+
+        if (!result.ok || !result.data.ok) {
+            window.Logger.log(`App start failed`);
+            return;
+        }
+
+        window.Logger.log(result.data.message);
+
+        await refreshStatus();
+        await refreshAppLogs();
+        startAppLogPolling();
+    } catch (error) {
+        window.Logger.log(`App start error: ${error.message}`);
+    }
 }
 
-function handleStopClick() {
-    window.Logger.log("Stop clicked.");
+async function handleStopClick() {
+    window.Logger.log("App stop requested.");
+
+    try {
+        const result = await window.Api.stopApp();
+
+        if (!result.ok || !result.data.ok) {
+            window.Logger.log(`App stop failed`);
+            return;
+        }
+
+        window.Logger.log(result.data.message);
+
+        stopAppLogPolling();
+        await refreshStatus();
+    } catch (error) {
+        window.Logger.log(`App stop error: ${error.message}`);
+    }
 }
 
+async function refreshAppLogs() {
+    try {
+        const result = await window.Api.fetchAppLogs();
+
+        if (!result.ok || !result.data.ok) {
+            window.Logger.log(`Failed to fetch app logs`);
+            return;
+        }
+
+        window.AppLogger.setText(result.data.logs);
+    } catch (error) {
+        window.Logger.log(`App log request error: ${error.message}`);
+    }
+}
+
+function startAppLogPolling() {
+    stopAppLogPolling();
+
+    appLogIntervalId = setInterval(async () => {
+        await refreshAppLogs();
+    }, 1000);
+}
+
+function stopAppLogPolling() {
+    if (appLogIntervalId) {
+        clearInterval(appLogIntervalId);
+        appLogIntervalId = null;
+    }
+}
+
+async function handleStopClick() {
+    window.Logger.log("App stop requested.");
+
+    try {
+        const result = await window.Api.stopApp();
+
+        if (!result.ok || !result.data.ok) {
+            window.Logger.log(
+                `App stop failed: ${result.data.message || "Unknown error"}`,
+            );
+            return;
+        }
+
+        window.Logger.log(result.data.message);
+        await refreshStatus();
+    } catch (error) {
+        window.Logger.log(`App stop request error: ${error.message}`);
+    }
+}
 function bindEvents() {
     document
         .getElementById("switch-pull-btn")
@@ -217,6 +296,12 @@ function bindEvents() {
         .getElementById("clear-build-log-btn")
         ?.addEventListener("click", () => {
             window.BuildLogger.clear();
+        });
+
+    document
+        .getElementById("clear-app-log-btn")
+        ?.addEventListener("click", () => {
+            window.AppLogger.clear();
         });
 }
 
