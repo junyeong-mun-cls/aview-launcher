@@ -1,7 +1,0 @@
-[main] Building folder: /cls/ws/dng6/build
-[build] Starting build
-[proc] Executing command: /usr/bin/cmake --build /cls/ws/dng6/build --config Release --target all -j 80 --
-[1/2] Always generating commit-id and datetime.
-[2/2] Running utility command for dng-config-log4cxx
-[driver] Build completed with exit code 0
-[build] Build finished with exit code 0

@@ -333,9 +333,17 @@ function bindEvents() {
 
 async function init() {
     bindEvents();
+
     await refreshStatus();
     await refreshBuildLogs();
+
     startStatusWatch();
+
+    const status = await window.Api.fetchStatus();
+
+    if (status.ok && status.data.buildStatus === "building") {
+        startBuildLogPolling();
+    }
 }
 
 init();
