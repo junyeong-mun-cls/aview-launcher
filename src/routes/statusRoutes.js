@@ -6,6 +6,7 @@ const {
     stopAppController,
     getAppStatusController,
     getAppLogsController,
+    forceStopAppController,
 } = require("../controllers/statusController");
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post("/app/start", startAppController);
 router.post("/app/stop", stopAppController);
 router.get("/app/status", getAppStatusController);
 router.get("/app/logs", getAppLogsController);
+router.post("/app/force-stop", forceStopAppController);
 
 module.exports = router;

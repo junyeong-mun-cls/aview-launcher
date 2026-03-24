@@ -55,6 +55,12 @@ async function fetchAppLogs() {
     return requestJson("/api/app/logs");
 }
 
+async function forceStopApp() {
+    return requestJson("/api/app/force-stop", {
+        method: "POST",
+    });
+}
+
 window.Api = {
     fetchStatus,
     switchPull,
@@ -64,4 +70,5 @@ window.Api = {
     stopApp,
     fetchAppStatus,
     fetchAppLogs,
+    forceStopApp,
 };

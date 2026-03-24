@@ -250,25 +250,47 @@ function stopAppLogPolling() {
     }
 }
 
-async function handleStopClick() {
-    window.Logger.log("App stop requested.");
+async function handleForceStopClick() {
+    window.Logger.log("App force stop requested.");
 
     try {
-        const result = await window.Api.stopApp();
+        const result = await window.Api.forceStopApp();
+
+        console.log("force stop result:", result);
 
         if (!result.ok || !result.data.ok) {
             window.Logger.log(
-                `App stop failed: ${result.data.message || "Unknown error"}`,
+                `App force stop failed: ${result.data?.message || "Unknown error"}`,
             );
+
+            if (result.data?.error) {
+                window.Logger.log(`error: ${result.data.error}`);
+            }
+
+            if (result.data?.stdout) {
+                window.Logger.log(`stdout:\n${result.data.stdout}`);
+            }
+
+            if (result.data?.stderr) {
+                window.Logger.log(`stderr:\n${result.data.stderr}`);
+            }
+
             return;
         }
 
         window.Logger.log(result.data.message);
+
+        if (result.data.output) {
+            window.Logger.log(`force stop output:\n${result.data.output}`);
+        }
+
+        stopAppLogPolling();
         await refreshStatus();
     } catch (error) {
-        window.Logger.log(`App stop request error: ${error.message}`);
+        window.Logger.log(`App force stop request error: ${error.message}`);
     }
 }
+
 function bindEvents() {
     document
         .getElementById("switch-pull-btn")
@@ -303,6 +325,10 @@ function bindEvents() {
         ?.addEventListener("click", () => {
             window.AppLogger.clear();
         });
+
+    document
+        .getElementById("force-stop-btn")
+        ?.addEventListener("click", handleForceStopClick);
 }
 
 async function init() {

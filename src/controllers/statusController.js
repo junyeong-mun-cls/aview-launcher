@@ -7,6 +7,7 @@ const {
     stopApp,
     getAppStatus,
     readAppLogs,
+    forceStopApp,
 } = require("../services/appService");
 
 function getStatus(req, res) {
@@ -126,6 +127,24 @@ function getAppLogsController(req, res) {
     }
 }
 
+function forceStopAppController(req, res) {
+    try {
+        const result = forceStopApp();
+
+        if (!result.ok) {
+            return res.status(400).json(result);
+        }
+
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to force stop app.",
+            error: error.message,
+        });
+    }
+}
+
 module.exports = {
     getStatus,
     switchAndPull,
@@ -133,4 +152,5 @@ module.exports = {
     stopAppController,
     getAppStatusController,
     getAppLogsController,
+    forceStopAppController,
 };

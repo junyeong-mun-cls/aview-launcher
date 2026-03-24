@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const { getRepoRoot } = require("./gitService");
 
 const runtimeDir = path.join(__dirname, "..", "..", "runtime");
@@ -121,10 +121,30 @@ function stopApp() {
     }
 }
 
+function forceStopApp() {
+    return new Promise((resolve) => {
+        exec(
+            "ps -A | grep aview | awk '{print $1}' | xargs kill",
+            (error, stdout, stderr) => {
+                // 어쨌든 다 죽이는게 목적이라 상태는 stopped로 정리
+                appProcess = null;
+
+                return resolve({
+                    ok: true,
+                    message: "Force stop executed.",
+                    stdout,
+                    stderr,
+                });
+            },
+        );
+    });
+}
+
 module.exports = {
     startApp,
     stopApp,
     isAppRunning,
     getAppStatus,
     readAppLogs,
+    forceStopApp,
 };
