@@ -86,15 +86,17 @@ pre {
     color: #e2e8f0;
     padding: 16px;
     border-radius: 8px;
-
     height: 250px;
-    /* 고정 높이 */
     overflow-y: auto;
-    /* 세로 스크롤 */
     overflow-x: auto;
-
     font-size: 13px;
     line-height: 1.4;
+    white-space: pre-wrap;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #log-box {

@@ -25,7 +25,19 @@ async function switchPull(branch) {
     });
 }
 
+async function startBuild() {
+    return requestJson("/api/build/start", {
+        method: "POST",
+    });
+}
+
+async function fetchBuildLogs() {
+    return requestJson("/api/build/logs");
+}
+
 window.Api = {
     fetchStatus,
     switchPull,
+    startBuild,
+    fetchBuildLogs,
 };

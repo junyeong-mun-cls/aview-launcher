@@ -1,24 +1,23 @@
 // 로그 출력, 자동 스크롤, 최대 줄 수 제한
-
-const logBox = document.getElementById("log-box");
+const actionLogBox = document.getElementById("action-log-box");
 
 function log(message) {
-    if (!logBox) return;
+    if (!actionLogBox) return;
 
     const now = new Date().toLocaleTimeString();
-    logBox.textContent += `\n[${now}] ${message}`;
+    actionLogBox.textContent += `\n[${now}] ${message}`;
 
-    const lines = logBox.textContent.split("\n");
+    const lines = actionLogBox.textContent.split("\n");
     if (lines.length > 200) {
-        logBox.textContent = lines.slice(-200).join("\n");
+        actionLogBox.textContent = lines.slice(-200).join("\n");
     }
 
-    logBox.scrollTop = logBox.scrollHeight;
+    actionLogBox.scrollTop = actionLogBox.scrollHeight;
 }
 
 function clearLog() {
-    if (!logBox) return;
-    logBox.textContent = "";
+    if (!actionLogBox) return;
+    actionLogBox.textContent = "";
 }
 
 window.Logger = {
