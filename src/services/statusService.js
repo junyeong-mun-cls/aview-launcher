@@ -1,5 +1,5 @@
 const { getCurrentBranch } = require("./gitService");
-const { getBuildStatus } = require("./buildState");
+const { getBuildStatus } = require("../utils/buildState");
 const { getAppStatus } = require("./appService");
 
 function getLauncherStatus() {

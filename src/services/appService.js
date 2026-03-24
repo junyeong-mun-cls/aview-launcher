@@ -30,7 +30,10 @@ function readAppLogs() {
 }
 
 function clearAppLogs() {
-    fs.writeFileSync(getAppLogPath(), "");
+    const logPath = getAppLogPath();
+    if (fs.existsSync(logPath)) {
+        fs.writeFileSync(logPath, "");
+    }
 }
 
 function getBinPath() {

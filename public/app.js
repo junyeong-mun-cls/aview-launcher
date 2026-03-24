@@ -315,18 +315,6 @@ function bindEvents() {
         });
 
     document
-        .getElementById("clear-build-log-btn")
-        ?.addEventListener("click", () => {
-            window.BuildLogger.clear();
-        });
-
-    document
-        .getElementById("clear-app-log-btn")
-        ?.addEventListener("click", () => {
-            window.AppLogger.clear();
-        });
-
-    document
         .getElementById("force-stop-btn")
         ?.addEventListener("click", handleForceStopClick);
 }

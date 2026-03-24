@@ -7,7 +7,7 @@ const {
     setBuildStatus,
     setBuildRunning,
     isBuildRunning,
-} = require("./buildState");
+} = require("../utils/buildState");
 
 const runtimeDir = path.join(__dirname, "..", "..", "runtime");
 const buildLogPath = path.join(runtimeDir, "build.log");
@@ -34,7 +34,11 @@ function readBuildLogs() {
 }
 
 function clearBuildLogs() {
-    fs.writeFileSync(getBuildLogPath(), "");
+    const logPath = getBuildLogPath();
+
+    if (fs.existsSync(logPath)) {
+        fs.writeFileSync(logPath, "");
+    }
 }
 
 function appendLog(stream, message) {
