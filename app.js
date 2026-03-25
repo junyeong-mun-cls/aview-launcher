@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 const pageRoutes = require("./src/routes/pageRoutes");
 const aviewRoutes = require("./src/routes/aviewRoutes");
+const aviewhubRoutes = require("./src/routes/aviewhubRoutes");
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,7 @@ app.set("view engine", "ejs");
 
 app.use("/", pageRoutes);
 app.use("/aview/api", aviewRoutes);
+app.use("/aviewhub/api", aviewhubRoutes);
 
 // 서버 시작
 app.listen(port, "0.0.0.0", () => {

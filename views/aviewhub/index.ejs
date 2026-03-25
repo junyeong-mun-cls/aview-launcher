@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= title %></title>
+        <link rel="stylesheet" href="/style.css" />
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>AVIEWHUB Launcher</h1>
+            <p class="subtitle">Branch / build / multi-launch tool</p>
+
+            <section class="card">
+                <h2>Status</h2>
+                <div class="status-row">
+                    <span>Current Branch</span>
+                    <strong id="current-branch"><%= currentBranch %></strong>
+                </div>
+                <div class="status-row">
+                    <span>Build Status</span>
+                    <strong id="build-status"><%= buildStatus %></strong>
+                </div>
+                <div class="status-row">
+                    <span>App URL</span>
+                    <a id="app-url" href="<%= appUrl %>" target="_blank">
+                        <%= appUrl %>
+                    </a>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Controls</h2>
+                <div class="form-row">
+                    <label for="branch">Branch</label>
+                    <input
+                        id="branch"
+                        type="text"
+                        placeholder="e.g. develop or feature/hub"
+                    />
+                </div>
+
+                <div class="button-row">
+                    <button id="switch-pull-btn">Switch & Pull</button>
+                    <button id="build-btn">Build</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Aviewhub 실행</h2>
+                <div class="button-row">
+                    <button id="hub-start-btn">Start</button>
+                    <button id="hub-stop-btn">Stop</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>DeepC 실행</h2>
+                <div class="form-row">
+                    <label for="deepc-input-dir">Input Directory</label>
+                    <input
+                        id="deepc-input-dir"
+                        type="text"
+                        placeholder="/path/to/input"
+                    />
+                </div>
+                <div class="form-row">
+                    <label for="deepc-output-dir">Output Directory</label>
+                    <input
+                        id="deepc-output-dir"
+                        type="text"
+                        placeholder="/path/to/output"
+                    />
+                </div>
+                <div class="button-row">
+                    <button id="deepc-start-btn">Start</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Floy 실행</h2>
+                <div class="form-row">
+                    <label for="floy-input-dir">Input Directory</label>
+                    <input
+                        id="floy-input-dir"
+                        type="text"
+                        placeholder="/path/to/input"
+                    />
+                </div>
+                <div class="form-row">
+                    <label for="floy-output-dir">Output Directory</label>
+                    <input
+                        id="floy-output-dir"
+                        type="text"
+                        placeholder="/path/to/output"
+                    />
+                </div>
+                <div class="button-row">
+                    <button id="floy-start-btn">Start</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="section-header">
+                    <h2>Action Log</h2>
+                    <button id="clear-action-log-btn" type="button">
+                        Clear
+                    </button>
+                </div>
+                <pre id="action-log-box">Ready.</pre>
+            </section>
+
+            <section class="card">
+                <div class="section-header">
+                    <h2>Build Log</h2>
+                </div>
+                <pre id="build-log-box"></pre>
+            </section>
+        </div>
+
+        <script src="/aviewhub/api.js"></script>
+        <script src="/common/status.js"></script>
+        <script src="/aviewhub/app.js"></script>
+    </body>
+</html>
