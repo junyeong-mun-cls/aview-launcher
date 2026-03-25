@@ -1,9 +1,15 @@
+const hubService = require("../services/avewhubService");
+const statusService = require("../services/statusService");
+
 function GetStatus(req, res) {
+    const status = statusService.GetLauncherStatus();
+
     return res.json({
         ok: true,
         currentBranch: "dummy-branch",
         buildStatus: "idle",
         appUrl: "http://localhost",
+        runningTarget: status.runningTarget,
     });
 }
 
@@ -38,18 +44,26 @@ function GetBuildLogs(req, res) {
     });
 }
 
-function StartHub(req, res) {
+function GetActionLogs(req, res) {
+    const result = hubService.GetActionLogs();
+
     return res.json({
         ok: true,
-        message: "aviewhub start dummy",
+        runningTarget: result.runningTarget,
+        logs: result.logs,
     });
 }
 
+function StartHub(req, res) {
+    const result = hubService.StartTarget("hub");
+
+    return res.status(result.ok ? 200 : 400).json(result);
+}
+
 function StopHub(req, res) {
-    return res.json({
-        ok: true,
-        message: "aviewhub stop dummy",
-    });
+    const result = hubService.StopTarget("hub");
+
+    return res.status(result.ok ? 200 : 400).json(result);
 }
 
 function StartDeepC(req, res) {
@@ -62,12 +76,12 @@ function StartDeepC(req, res) {
         });
     }
 
-    return res.json({
-        ok: true,
-        message: "deepc start dummy",
-        inputDir,
-        outputDir,
-    });
+    const result = hubService.StartTarget(
+        "deepc",
+        `(input=${inputDir}, output=${outputDir})`,
+    );
+
+    return res.status(result.ok ? 200 : 400).json(result);
 }
 
 function StartFloy(req, res) {
@@ -80,21 +94,25 @@ function StartFloy(req, res) {
         });
     }
 
-    return res.json({
-        ok: true,
-        message: "floy start dummy",
-        inputDir,
-        outputDir,
-    });
+    const result = hubService.StartTarget(
+        "floy",
+        `(input=${inputDir}, output=${outputDir})`,
+    );
+
+    return res.status(result.ok ? 200 : 400).json(result);
 }
 
 module.exports = {
-    GetStatus,
     SwitchAndPull,
     StartBuild,
     GetBuildLogs,
+    GetStatus,
+    GetActionLogs,
     StartHub,
     StopHub,
     StartDeepC,
     StartFloy,
+    SwitchAndPull,
+    StartBuild,
+    GetBuildLogs,
 };

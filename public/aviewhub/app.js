@@ -1,61 +1,115 @@
-function appendActionLog(message) {
+function setActionLog(logs) {
     const box = document.getElementById("action-log-box");
     if (!box) return;
 
-    const time = new Date().toLocaleTimeString();
-    box.textContent += `\n[${time}] ${message}`;
+    box.textContent = logs && logs.trim() ? logs : "Ready.";
     box.scrollTop = box.scrollHeight;
 }
 
 function setBuildLog(logs) {
     const box = document.getElementById("build-log-box");
     if (!box) return;
+
     box.textContent = logs || "";
+    box.scrollTop = box.scrollHeight;
+}
+
+function setCurrentBranch(branch) {
+    const el = document.getElementById("current-branch");
+    if (el && branch) {
+        el.textContent = branch;
+    }
+}
+
+function updateStartButtons(runningTarget) {
+    const hubStartBtn = document.getElementById("hub-start-btn");
+    const hubStopBtn = document.getElementById("hub-stop-btn");
+    const deepcStartBtn = document.getElementById("deepc-start-btn");
+    const floyStartBtn = document.getElementById("floy-start-btn");
+
+    if (!runningTarget) {
+        if (hubStartBtn) hubStartBtn.disabled = false;
+        if (deepcStartBtn) deepcStartBtn.disabled = false;
+        if (floyStartBtn) floyStartBtn.disabled = false;
+        if (hubStopBtn) hubStopBtn.disabled = true;
+        return;
+    }
+
+    if (hubStartBtn) hubStartBtn.disabled = runningTarget !== "hub";
+    if (deepcStartBtn) deepcStartBtn.disabled = runningTarget !== "deepc";
+    if (floyStartBtn) floyStartBtn.disabled = runningTarget !== "floy";
+    if (hubStopBtn) hubStopBtn.disabled = runningTarget !== "hub";
+}
+
+async function refreshStatus() {
+    const result = await getStatus();
+
+    if (!result.ok) {
+        return;
+    }
+
+    setCurrentBranch(result.currentBranch);
+    updateStartButtons(result.runningTarget);
+}
+
+async function refreshActionLogs() {
+    const result = await getActionLogs();
+
+    if (!result.ok) {
+        return;
+    }
+
+    setActionLog(result.logs);
+    updateStartButtons(result.runningTarget);
 }
 
 document
     .getElementById("clear-action-log-btn")
     ?.addEventListener("click", () => {
-        const box = document.getElementById("action-log-box");
-        if (box) {
-            box.textContent = "Ready.";
-        }
+        setActionLog("Ready.");
     });
 
 document
     .getElementById("switch-pull-btn")
     ?.addEventListener("click", async () => {
         const branch = document.getElementById("branch")?.value.trim();
-
         const result = await switchAndPull(branch);
-        appendActionLog(result.message || JSON.stringify(result));
 
-        if (result.branch) {
-            const branchEl = document.getElementById("current-branch");
-            if (branchEl) {
-                branchEl.textContent = result.branch;
-            }
+        setActionLog(result.message || "Switch & Pull finished.");
+
+        if (result.ok && result.branch) {
+            setCurrentBranch(result.branch);
         }
     });
 
 document.getElementById("build-btn")?.addEventListener("click", async () => {
     const result = await startBuild();
-    appendActionLog(result.message || JSON.stringify(result));
+    setActionLog(result.message || "Build started.");
 
-    const logs = await getBuildLogs();
-    setBuildLog(logs.logs);
+    const buildLogResult = await getBuildLogs();
+    if (buildLogResult.ok) {
+        setBuildLog(buildLogResult.logs);
+    }
 });
 
 document
     .getElementById("hub-start-btn")
     ?.addEventListener("click", async () => {
         const result = await startHub();
-        appendActionLog(result.message || JSON.stringify(result));
+        await refreshActionLogs();
+
+        if (!result.ok) {
+            setActionLog(result.message || "Failed to start hub.");
+        }
     });
 
 document.getElementById("hub-stop-btn")?.addEventListener("click", async () => {
     const result = await stopHub();
-    appendActionLog(result.message || JSON.stringify(result));
+    await refreshActionLogs();
+
+    if (!result.ok) {
+        setActionLog(result.message || "Failed to stop hub.");
+    }
 });
 
 document
@@ -69,7 +123,11 @@ document
             ?.value.trim();
 
         const result = await startDeepC(inputDir, outputDir);
-        appendActionLog(result.message || JSON.stringify(result));
+        await refreshActionLogs();
+
+        if (!result.ok) {
+            setActionLog(result.message || "Failed to start deepc.");
+        }
     });
 
 document
@@ -83,5 +141,14 @@ document
             ?.value.trim();
 
         const result = await startFloy(inputDir, outputDir);
-        appendActionLog(result.message || JSON.stringify(result));
+        await refreshActionLogs();
+
+        if (!result.ok) {
+            setActionLog(result.message || "Failed to start floy.");
+        }
     });
+
+window.addEventListener("load", async () => {
+    await refreshStatus();
+    await refreshActionLogs();
+});

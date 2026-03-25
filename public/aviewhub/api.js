@@ -1,4 +1,5 @@
-const AVIEWHUB_API_BASE = "/api/aviewhub";
+// server mounts: app.use("/aviewhub/api", aviewhubRoutes)
+const AVIEWHUB_API_BASE = "/aviewhub/api";
 
 async function getStatus() {
     const response = await fetch(`${AVIEWHUB_API_BASE}/status`);
@@ -27,6 +28,11 @@ async function startBuild() {
 
 async function getBuildLogs() {
     const response = await fetch(`${AVIEWHUB_API_BASE}/build/logs`);
+    return response.json();
+}
+
+async function getActionLogs() {
+    const response = await fetch(`${AVIEWHUB_API_BASE}/action-logs`);
     return response.json();
 }
 

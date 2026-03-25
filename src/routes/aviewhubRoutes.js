@@ -1,19 +1,19 @@
 const express = require("express");
-const controller = require("../controllers/aviewhubController");
+const hubController = require("../controllers/aviewhubController");
 
 const router = express.Router();
 
-router.get("/status", controller.GetStatus);
+router.get("/status", hubController.GetStatus);
+router.get("/action-logs", hubController.GetActionLogs);
 
-router.post("/switch-pull", controller.SwitchAndPull);
+router.post("/switch-pull", hubController.SwitchAndPull);
+router.post("/build/start", hubController.StartBuild);
+router.get("/build/logs", hubController.GetBuildLogs);
 
-router.post("/build/start", controller.StartBuild);
-router.get("/build/logs", controller.GetBuildLogs);
+router.post("/hub/start", hubController.StartHub);
+router.post("/hub/stop", hubController.StopHub);
 
-router.post("/hub/start", controller.StartHub);
-router.post("/hub/stop", controller.StopHub);
-
-router.post("/deepc/start", controller.StartDeepC);
-router.post("/floy/start", controller.StartFloy);
+router.post("/deepc/start", hubController.StartDeepC);
+router.post("/floy/start", hubController.StartFloy);
 
 module.exports = router;
