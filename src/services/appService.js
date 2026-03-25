@@ -51,10 +51,10 @@ function StartApp() {
         };
     }
 
-    filePath.EnsureRuntimeDir(filePath.GetRuntimePath());
-    clearAppLogs();
+    filePath.EnsureDir(filePath.GetRuntimePath());
+    const logPath = filePath.GetAppLogPath();
 
-    const logFd = fs.openSync(filePath.GetAppLogPath(), "a");
+    const logFd = fs.openSync(logPath, "a");
 
     const child = spawn("./runapp.sh", ["aview.platform.exe"], {
         cwd: binPath,
@@ -120,13 +120,6 @@ function ForceStopApp() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function clearAppLogs() {
-    const logPath = filePath.GetAppLogPath();
-    if (fs.existsSync(logPath)) {
-        fs.writeFileSync(logPath, "");
-    }
-}
 
 module.exports = {
     StartApp,

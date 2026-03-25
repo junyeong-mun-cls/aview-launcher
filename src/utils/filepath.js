@@ -6,18 +6,37 @@ function GetRootPath() {
 }
 
 function GetRuntimePath() {
-    return path.join(GetRootPath(), "runtime");
+    const p = path.join(GetRootPath(), "runtime");
+    EnsureDir(p);
+    return p;
+}
+
+/**
+ * runtime/app.log, runtime/build.log: 없으면 빈 파일 생성, 이미 파일이면 그대로 둠.
+ * 예전 버그로 동일 이름의 디렉터리만 있으면 제거 후 빈 파일로 만듦 (EISDIR 방지).
+ */
+function ensureLogFileAt(filePath) {
+    if (fs.existsSync(filePath)) {
+        const stat = fs.statSync(filePath);
+        if (stat.isFile()) {
+            return;
+        }
+        if (stat.isDirectory()) {
+            fs.rmSync(filePath, { recursive: true });
+        }
+    }
+    fs.writeFileSync(filePath, "");
 }
 
 function GetAppLogPath() {
-    p = path.join(GetRuntimePath(), "app.log");
-    EnsureRuntimeDir(p);
+    const p = path.join(GetRuntimePath(), "app.log");
+    ensureLogFileAt(p);
     return p;
 }
 
 function GetBuildLogPath() {
-    p = path.join(GetRuntimePath(), "build.log");
-    EnsureRuntimeDir(p);
+    const p = path.join(GetRuntimePath(), "build.log");
+    ensureLogFileAt(p);
     return p;
 }
 
@@ -29,7 +48,7 @@ function GetBuildPath() {
     return path.join(GetRootPath(), "build");
 }
 
-function EnsureRuntimeDir(p) {
+function EnsureDir(p) {
     if (!fs.existsSync(p)) {
         fs.mkdirSync(p, { recursive: true });
     }
@@ -37,9 +56,10 @@ function EnsureRuntimeDir(p) {
 
 module.exports = {
     GetRootPath,
-    EnsureRuntimeDir,
+    EnsureDir,
     GetBinPath,
     GetAppLogPath,
     GetBuildLogPath,
     GetBuildPath,
+    GetRuntimePath,
 };

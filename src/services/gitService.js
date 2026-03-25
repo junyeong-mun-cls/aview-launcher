@@ -89,7 +89,7 @@ async function SwitchAndPullBranch(branch) {
         ok: true,
         message: "Fetch → Switch → Pull completed successfully.",
         branch,
-        currentBranch: getCurrentBranch(repoPath),
+        currentBranch: GetCurrentBranch(repoPath),
 
         fetch: {
             stdout: fetchResult.stdout,

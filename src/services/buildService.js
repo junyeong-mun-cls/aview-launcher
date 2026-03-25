@@ -39,10 +39,12 @@ function StartBuild() {
         };
     }
 
-    filePath.EnsureRuntimeDir(filePath.GetRuntimePath());
-    clearBuildLogs();
+    filePath.EnsureDir(filePath.GetRuntimePath());
+    const logPath = filePath.GetBuildLogPath();
 
-    const logStream = fs.createWriteStream(getBuildLogPath(), { flags: "a" });
+    const logStream = fs.createWriteStream(logPath, {
+        flags: "a",
+    });
 
     setBuildRunning(true);
     setBuildStatus("building");
@@ -114,13 +116,6 @@ function StartBuild() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function clearBuildLogs() {
-    const logPath = filePath.GetBuildLogPath();
-
-    if (fs.existsSync(logPath)) {
-        fs.writeFileSync(logPath, "");
-    }
-}
 
 function appendLog(stream, message) {
     stream.write(message);
