@@ -1,18 +1,18 @@
-const { getCurrentBranch } = require("./gitService");
-const { getBuildStatus } = require("../utils/buildState");
-const { getAppStatus } = require("./appService");
+const gitService = require("./gitService");
+const buildStatus = require("../utils/buildState");
+const appService = require("./appService");
 
-function getLauncherStatus() {
+function GetLauncherStatus() {
     const hostMachineIp = process.env.HOST_MACHINE_IP || "10.77.3.32";
 
     return {
-        currentBranch: getCurrentBranch(),
-        buildStatus: getBuildStatus(),
-        appStatus: getAppStatus(),
+        currentBranch: gitService.GetCurrentBranch(),
+        buildStatus: buildStatus.getBuildStatus(),
+        appStatus: appService.GetAppStatus(),
         appUrl: `http://${hostMachineIp}`,
     };
 }
 
 module.exports = {
-    getLauncherStatus,
+    GetLauncherStatus,
 };

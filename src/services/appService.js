@@ -1,26 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const { spawn, exec } = require("child_process");
-const { getRepoRoot } = require("./gitService");
 
-const runtimeDir = path.join(__dirname, "..", "..", "runtime");
-const appLogPath = path.join(runtimeDir, "app.log");
+const filePath = require("../utils/filepath");
 
 let appProcess = null;
 
-function ensureRuntimeDir() {
-    if (!fs.existsSync(runtimeDir)) {
-        fs.mkdirSync(runtimeDir, { recursive: true });
-    }
-}
-
-function getAppLogPath() {
-    ensureRuntimeDir();
-    return appLogPath;
-}
-
-function readAppLogs() {
-    const logPath = getAppLogPath();
+function ReadAppLogs() {
+    const logPath = filePath.GetAppLogPath();
 
     if (!fs.existsSync(logPath)) {
         return "";
@@ -29,18 +16,7 @@ function readAppLogs() {
     return fs.readFileSync(logPath, "utf8");
 }
 
-function clearAppLogs() {
-    const logPath = getAppLogPath();
-    if (fs.existsSync(logPath)) {
-        fs.writeFileSync(logPath, "");
-    }
-}
-
-function getBinPath() {
-    return path.join(getRepoRoot(), "build", "bin");
-}
-
-function getAppStatus() {
+function GetAppStatus() {
     if (!appProcess) {
         return "stopped";
     }
@@ -54,19 +30,19 @@ function getAppStatus() {
     }
 }
 
-function isAppRunning() {
-    return getAppStatus() === "running";
+function IsAppRunning() {
+    return GetAppStatus() === "running";
 }
 
-function startApp() {
-    if (isAppRunning()) {
+function StartApp() {
+    if (IsAppRunning()) {
         return {
             ok: false,
             message: "App is already running.",
         };
     }
 
-    const binPath = getBinPath();
+    const binPath = filePath.GetBinPath();
 
     if (!fs.existsSync(binPath)) {
         return {
@@ -75,10 +51,10 @@ function startApp() {
         };
     }
 
-    ensureRuntimeDir();
+    filePath.EnsureRuntimeDir(filePath.GetRuntimePath());
     clearAppLogs();
 
-    const logFd = fs.openSync(getAppLogPath(), "a");
+    const logFd = fs.openSync(filePath.GetAppLogPath(), "a");
 
     const child = spawn("./runapp.sh", ["aview.platform.exe"], {
         cwd: binPath,
@@ -97,8 +73,8 @@ function startApp() {
     };
 }
 
-function stopApp() {
-    if (!appProcess || !isAppRunning()) {
+function StopApp() {
+    if (!appProcess || !IsAppRunning()) {
         appProcess = null;
 
         return {
@@ -124,7 +100,7 @@ function stopApp() {
     }
 }
 
-function forceStopApp() {
+function ForceStopApp() {
     return new Promise((resolve) => {
         exec(
             "ps -A | grep aview | awk '{print $1}' | xargs kill",
@@ -143,11 +119,20 @@ function forceStopApp() {
     });
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function clearAppLogs() {
+    const logPath = filePath.GetAppLogPath();
+    if (fs.existsSync(logPath)) {
+        fs.writeFileSync(logPath, "");
+    }
+}
+
 module.exports = {
-    startApp,
-    stopApp,
-    isAppRunning,
-    getAppStatus,
-    readAppLogs,
-    forceStopApp,
+    StartApp,
+    StopApp,
+    IsAppRunning,
+    GetAppStatus,
+    ReadAppLogs,
+    ForceStopApp,
 };

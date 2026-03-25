@@ -2,29 +2,16 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const { getRepoRoot } = require("./gitService");
+const filePath = require("../utils/filepath");
+
 const {
     setBuildStatus,
     setBuildRunning,
     isBuildRunning,
 } = require("../utils/buildState");
 
-const runtimeDir = path.join(__dirname, "..", "..", "runtime");
-const buildLogPath = path.join(runtimeDir, "build.log");
-
-function ensureRuntimeDir() {
-    if (!fs.existsSync(runtimeDir)) {
-        fs.mkdirSync(runtimeDir, { recursive: true });
-    }
-}
-
-function getBuildLogPath() {
-    ensureRuntimeDir();
-    return buildLogPath;
-}
-
-function readBuildLogs() {
-    const logPath = getBuildLogPath();
+function ReadBuildLogs() {
+    const logPath = filePath.GetBuildLogPath();
 
     if (!fs.existsSync(logPath)) {
         return "";
@@ -33,19 +20,7 @@ function readBuildLogs() {
     return fs.readFileSync(logPath, "utf8");
 }
 
-function clearBuildLogs() {
-    const logPath = getBuildLogPath();
-
-    if (fs.existsSync(logPath)) {
-        fs.writeFileSync(logPath, "");
-    }
-}
-
-function appendLog(stream, message) {
-    stream.write(message);
-}
-
-function startBuild() {
+function StartBuild() {
     if (isBuildRunning()) {
         return {
             ok: false,
@@ -53,8 +28,7 @@ function startBuild() {
         };
     }
 
-    const repoRoot = getRepoRoot();
-    const buildDir = path.join(repoRoot, "build");
+    const buildDir = filePath.GetBuildPath();
     const buildType = process.env.BUILD_TYPE || "Release";
     const buildJobs = process.env.BUILD_JOBS || "80";
 
@@ -65,7 +39,7 @@ function startBuild() {
         };
     }
 
-    ensureRuntimeDir();
+    filePath.EnsureRuntimeDir(filePath.GetRuntimePath());
     clearBuildLogs();
 
     const logStream = fs.createWriteStream(getBuildLogPath(), { flags: "a" });
@@ -139,7 +113,20 @@ function startBuild() {
     };
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function clearBuildLogs() {
+    const logPath = filePath.GetBuildLogPath();
+
+    if (fs.existsSync(logPath)) {
+        fs.writeFileSync(logPath, "");
+    }
+}
+
+function appendLog(stream, message) {
+    stream.write(message);
+}
+
 module.exports = {
-    startBuild,
-    readBuildLogs,
+    StartBuild,
+    ReadBuildLogs,
 };

@@ -1,18 +1,48 @@
 const { isValidBranchName } = require("../utils/validator");
 
-const { getLauncherStatus } = require("../services/statusService");
-const { switchAndPullBranch } = require("../services/gitService");
-const {
-    startApp,
-    stopApp,
-    getAppStatus,
-    readAppLogs,
-    forceStopApp,
-} = require("../services/appService");
+const gitService = require("../services/gitService");
+const buildService = require("../services/buildService");
+const appService = require("../services/appService");
+const statusService = require("../services/statusService");
 
-function getStatus(req, res) {
+function StartBuild(req, res) {
     try {
-        const status = getLauncherStatus();
+        const result = buildService.StartBuild();
+
+        if (!result.ok) {
+            return res.status(400).json(result);
+        }
+
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to start build.",
+            error: error.message,
+        });
+    }
+}
+
+function GetBuildLogs(req, res) {
+    try {
+        const logs = buildService.ReadBuildLogs();
+
+        return res.json({
+            ok: true,
+            logs,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to read build logs.",
+            error: error.message,
+        });
+    }
+}
+
+function GetStatus(req, res) {
+    try {
+        const status = statusService.GetLauncherStatus();
 
         return res.json({
             ok: true,
@@ -27,7 +57,7 @@ function getStatus(req, res) {
     }
 }
 
-async function switchAndPull(req, res) {
+async function SwitchAndPull(req, res) {
     const branch = (req.body.branch || "").trim();
 
     if (!branch) {
@@ -45,7 +75,7 @@ async function switchAndPull(req, res) {
     }
 
     try {
-        const result = await switchAndPullBranch(branch);
+        const result = await gitService.SwitchAndPullBranch(branch);
 
         if (!result.ok) {
             return res.status(500).json(result);
@@ -61,9 +91,9 @@ async function switchAndPull(req, res) {
     }
 }
 
-function startAppController(req, res) {
+function StartApp(req, res) {
     try {
-        const result = startApp();
+        const result = appService.StartApp();
 
         if (!result.ok) {
             return res.status(400).json(result);
@@ -79,9 +109,9 @@ function startAppController(req, res) {
     }
 }
 
-function stopAppController(req, res) {
+function StopApp(req, res) {
     try {
-        const result = stopApp();
+        const result = appService.StopApp();
 
         if (!result.ok) {
             return res.status(400).json(result);
@@ -97,11 +127,11 @@ function stopAppController(req, res) {
     }
 }
 
-function getAppStatusController(req, res) {
+function GetAppStatus(req, res) {
     try {
         return res.json({
             ok: true,
-            appStatus: getAppStatus(),
+            appStatus: appService.GetAppStatus(),
         });
     } catch (error) {
         return res.status(500).json({
@@ -112,11 +142,11 @@ function getAppStatusController(req, res) {
     }
 }
 
-function getAppLogsController(req, res) {
+function GetAppLogs(req, res) {
     try {
         return res.json({
             ok: true,
-            logs: readAppLogs(),
+            logs: appService.ReadAppLogs(),
         });
     } catch (error) {
         return res.status(500).json({
@@ -127,9 +157,9 @@ function getAppLogsController(req, res) {
     }
 }
 
-function forceStopAppController(req, res) {
+function ForceStopApp(req, res) {
     try {
-        const result = forceStopApp();
+        const result = appService.ForceStopApp();
 
         if (!result.ok) {
             return res.status(400).json(result);
@@ -146,11 +176,13 @@ function forceStopAppController(req, res) {
 }
 
 module.exports = {
-    getStatus,
-    switchAndPull,
-    startAppController,
-    stopAppController,
-    getAppStatusController,
-    getAppLogsController,
-    forceStopAppController,
+    GetStatus,
+    SwitchAndPull,
+    StartApp,
+    StopApp,
+    GetAppStatus,
+    GetAppLogs,
+    ForceStopApp,
+    StartBuild,
+    GetBuildLogs,
 };

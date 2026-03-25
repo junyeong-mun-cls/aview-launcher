@@ -11,12 +11,14 @@ async function requestJson(url, options = {}) {
     };
 }
 
+const defaultApiUrl = "/aview/api";
+
 async function fetchStatus() {
-    return requestJson("/api/status");
+    return requestJson(`${defaultApiUrl}/status`);
 }
 
 async function switchPull(branch) {
-    return requestJson("/api/switch-pull", {
+    return requestJson(`${defaultApiUrl}/switch-pull`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -26,37 +28,37 @@ async function switchPull(branch) {
 }
 
 async function startBuild() {
-    return requestJson("/api/build/start", {
+    return requestJson(`${defaultApiUrl}/build/start`, {
         method: "POST",
     });
 }
 
 async function fetchBuildLogs() {
-    return requestJson("/api/build/logs");
+    return requestJson(`${defaultApiUrl}/build/logs`);
 }
 
 async function startApp() {
-    return requestJson("/api/app/start", {
+    return requestJson(`${defaultApiUrl}/app/start`, {
         method: "POST",
     });
 }
 
 async function stopApp() {
-    return requestJson("/api/app/stop", {
+    return requestJson(`${defaultApiUrl}/app/stop`, {
         method: "POST",
     });
 }
 
 async function fetchAppStatus() {
-    return requestJson("/api/app/status");
+    return requestJson(`${defaultApiUrl}/app/status`);
 }
 
 async function fetchAppLogs() {
-    return requestJson("/api/app/logs");
+    return requestJson(`${defaultApiUrl}/app/logs`);
 }
 
 async function forceStopApp() {
-    return requestJson("/api/app/force-stop", {
+    return requestJson(`${defaultApiUrl}/app/force-stop`, {
         method: "POST",
     });
 }

@@ -3,8 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 
 const pageRoutes = require("./src/routes/pageRoutes");
-const statusRoutes = require("./src/routes/statusRoutes");
-const buildRoutes = require("./src/routes/buildRoutes");
+const aviewRoutes = require("./src/routes/aviewRoutes");
 
 dotenv.config();
 const app = express();
@@ -23,8 +22,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use("/", pageRoutes);
-app.use("/api", statusRoutes);
-app.use("/api", buildRoutes);
+app.use("/aview/api", aviewRoutes);
 
 // 서버 시작
 app.listen(port, "0.0.0.0", () => {

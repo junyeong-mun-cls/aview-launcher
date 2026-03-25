@@ -65,7 +65,6 @@ async function refreshStatus() {
 
         updateButtonsByStatus(result.data);
 
-        // 🔥 여기 추가
         if (result.data.appStatus !== "running") {
             stopAppLogPolling();
         }
@@ -77,7 +76,7 @@ function startStatusWatch() {
 
     statusWatchIntervalId = setInterval(async () => {
         await refreshStatus();
-    }, 1000);
+    }, 3000);
 }
 
 function stopStatusWatch() {

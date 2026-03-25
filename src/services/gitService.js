@@ -1,15 +1,10 @@
 const path = require("path");
 const { execFileSync } = require("child_process");
 const { runCommand } = require("../utils/runCommand");
+const filePath = require("../utils/filepath");
 
-function getRepoRoot(repoRoot) {
-    if (repoRoot) return repoRoot;
-
-    return process.env.AVIEW_REPO_PATH || path.join(__dirname, "..", "..");
-}
-
-function getCurrentBranch(repoRoot) {
-    const cwd = getRepoRoot(repoRoot);
+function GetCurrentBranch() {
+    const cwd = filePath.GetRootPath();
 
     try {
         const branch = execFileSync(
@@ -42,8 +37,8 @@ function getCurrentBranch(repoRoot) {
     }
 }
 
-async function switchAndPullBranch(branch) {
-    const repoPath = getRepoRoot();
+async function SwitchAndPullBranch(branch) {
+    const repoPath = filePath.GetRootPath();
 
     // 1. fetch
     const fetchResult = await runCommand("git", ["fetch", "--all"], {
@@ -112,7 +107,6 @@ async function switchAndPullBranch(branch) {
 }
 
 module.exports = {
-    getRepoRoot,
-    getCurrentBranch,
-    switchAndPullBranch,
+    GetCurrentBranch,
+    SwitchAndPullBranch,
 };
