@@ -13,6 +13,18 @@ function GetLauncherStatus() {
     };
 }
 
+function GetHubStatus() {
+    const hostMachineIp = process.env.HOST_MACHINE_IP || "10.77.3.32";
+
+    return {
+        currentBranch: gitService.GetCurrentBranch(),
+        buildStatus: buildStatus.getBuildStatus(),
+        appUrl: `http://${hostMachineIp}`,
+        runningTarget: hubService.GetRunningTarget(),
+    };
+}
+
 module.exports = {
     GetLauncherStatus,
+    GetHubStatus,
 };

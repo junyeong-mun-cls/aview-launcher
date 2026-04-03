@@ -1,34 +1,13 @@
+const filePath = require("../utils/filepath");
+
 let runningTarget = null;
 
 const actionLogs = {
     hub: [],
-    deepc: [],
-    floy: [],
 };
-
-function AppendActionLog(target, message) {
-    if (!actionLogs[target]) {
-        return;
-    }
-
-    const time = new Date().toLocaleTimeString();
-    actionLogs[target].push(`[${time}] ${message}`);
-
-    if (actionLogs[target].length > 200) {
-        actionLogs[target] = actionLogs[target].slice(-200);
-    }
-}
 
 function GetRunningTarget() {
     return runningTarget;
-}
-
-function GetCurrentActionLogs() {
-    if (!runningTarget) {
-        return "";
-    }
-
-    return actionLogs[runningTarget].join("\n");
 }
 
 function StartTarget(target, extraMessage = "") {
@@ -86,10 +65,52 @@ function GetActionLogs() {
     };
 }
 
+// app log
+function ClearAppLogs() {
+    filePath.EnsureDir(filePath.GetRuntimePath());
+    fs.writeFileSync(filePath.GetAppLogPath(), "");
+}
+
+function AppendAppLog(message) {
+    filePath.EnsureDir(filePath.GetRuntimePath());
+    const time = new Date().toLocaleTimeString();
+    fs.appendFileSync(filePath.GetAppLogPath(), `[${time}] ${message}\n`);
+}
+
+function ReadAppLogs() {
+    filePath.EnsureDir(filePath.GetRuntimePath());
+    if (!fs.existsSync(filePath.GetAppLogPath())) return "";
+    return fs.readFileSync(filePath.GetAppLogPath(), "utf8");
+}
+
+function AppendActionLog(target, message) {
+    if (!actionLogs[target]) {
+        return;
+    }
+
+    const time = new Date().toLocaleTimeString();
+    actionLogs[target].push(`[${time}] ${message}`);
+
+    if (actionLogs[target].length > 200) {
+        actionLogs[target] = actionLogs[target].slice(-200);
+    }
+}
+
+function GetCurrentActionLogs() {
+    if (!runningTarget) {
+        return "";
+    }
+
+    return actionLogs[runningTarget].join("\n");
+}
+
 module.exports = {
-    AppendActionLog,
     GetRunningTarget,
     StartTarget,
     StopTarget,
     GetActionLogs,
+    AppendActionLog,
+    ClearAppLogs,
+    AppendAppLog,
+    ReadAppLogs,
 };

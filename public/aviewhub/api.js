@@ -44,33 +44,14 @@ async function startHub() {
     return response.json();
 }
 
+async function getAppLogs() {
+    const res = await fetch(`${AVIEWHUB_API_BASE}/app/logs`);
+    return res.json();
+}
+
 async function stopHub() {
     const response = await fetch(`${AVIEWHUB_API_BASE}/hub/stop`, {
         method: "POST",
-    });
-
-    return response.json();
-}
-
-async function startDeepC(inputDir, outputDir) {
-    const response = await fetch(`${AVIEWHUB_API_BASE}/deepc/start`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputDir, outputDir }),
-    });
-
-    return response.json();
-}
-
-async function startFloy(inputDir, outputDir) {
-    const response = await fetch(`${AVIEWHUB_API_BASE}/floy/start`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputDir, outputDir }),
     });
 
     return response.json();

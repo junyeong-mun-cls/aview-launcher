@@ -24,20 +24,14 @@ function setCurrentBranch(branch) {
 function updateStartButtons(runningTarget) {
     const hubStartBtn = document.getElementById("hub-start-btn");
     const hubStopBtn = document.getElementById("hub-stop-btn");
-    const deepcStartBtn = document.getElementById("deepc-start-btn");
-    const floyStartBtn = document.getElementById("floy-start-btn");
 
     if (!runningTarget) {
         if (hubStartBtn) hubStartBtn.disabled = false;
-        if (deepcStartBtn) deepcStartBtn.disabled = false;
-        if (floyStartBtn) floyStartBtn.disabled = false;
         if (hubStopBtn) hubStopBtn.disabled = true;
         return;
     }
 
     if (hubStartBtn) hubStartBtn.disabled = runningTarget !== "hub";
-    if (deepcStartBtn) deepcStartBtn.disabled = runningTarget !== "deepc";
-    if (floyStartBtn) floyStartBtn.disabled = runningTarget !== "floy";
     if (hubStopBtn) hubStopBtn.disabled = runningTarget !== "hub";
 }
 
@@ -61,6 +55,19 @@ async function refreshActionLogs() {
 
     setActionLog(result.logs);
     updateStartButtons(result.runningTarget);
+}
+
+async function refreshAppLogs() {
+    const result = await getAppLogs();
+    if (result.ok) {
+        setAppLog(result.logs);
+    }
+}
+
+function setAppLog(logs) {
+    const box = document.getElementById("app-log-box");
+    if (!box) return;
+    box.textContent = logs || "";
 }
 
 document
@@ -97,6 +104,7 @@ document
     ?.addEventListener("click", async () => {
         const result = await startHub();
         await refreshActionLogs();
+        await refreshAppLogs();
 
         if (!result.ok) {
             setActionLog(result.message || "Failed to start hub.");
@@ -106,49 +114,15 @@ document
 document.getElementById("hub-stop-btn")?.addEventListener("click", async () => {
     const result = await stopHub();
     await refreshActionLogs();
+    await refreshAppLogs();
 
     if (!result.ok) {
         setActionLog(result.message || "Failed to stop hub.");
     }
 });
 
-document
-    .getElementById("deepc-start-btn")
-    ?.addEventListener("click", async () => {
-        const inputDir = document
-            .getElementById("deepc-input-dir")
-            ?.value.trim();
-        const outputDir = document
-            .getElementById("deepc-output-dir")
-            ?.value.trim();
-
-        const result = await startDeepC(inputDir, outputDir);
-        await refreshActionLogs();
-
-        if (!result.ok) {
-            setActionLog(result.message || "Failed to start deepc.");
-        }
-    });
-
-document
-    .getElementById("floy-start-btn")
-    ?.addEventListener("click", async () => {
-        const inputDir = document
-            .getElementById("floy-input-dir")
-            ?.value.trim();
-        const outputDir = document
-            .getElementById("floy-output-dir")
-            ?.value.trim();
-
-        const result = await startFloy(inputDir, outputDir);
-        await refreshActionLogs();
-
-        if (!result.ok) {
-            setActionLog(result.message || "Failed to start floy.");
-        }
-    });
-
 window.addEventListener("load", async () => {
     await refreshStatus();
     await refreshActionLogs();
+    await refreshAppLogs();
 });
