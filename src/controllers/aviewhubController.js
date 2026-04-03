@@ -56,17 +56,38 @@ async function SwitchAndPull(req, res) {
 }
 
 function StartBuild(req, res) {
-    return res.json({
-        ok: true,
-        message: "aviewhub build dummy started",
-    });
+    try {
+        const result = buildService.StartHubBuild();
+
+        if (!result.ok) {
+            return res.status(400).json(result);
+        }
+
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to start hub build.",
+            error: error.message,
+        });
+    }
 }
 
 function GetBuildLogs(req, res) {
-    return res.json({
-        ok: true,
-        logs: "[dummy] build log",
-    });
+    try {
+        const logs = buildService.ReadHubBuildLogs();
+
+        return res.json({
+            ok: true,
+            logs,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Failed to read hub build logs.",
+            error: error.message,
+        });
+    }
 }
 
 function GetActionLogs(req, res) {

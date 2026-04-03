@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 const { spawn } = require("child_process");
 
 const filePath = require("../utils/filepath");
@@ -20,6 +19,89 @@ function ReadBuildLogs() {
     return fs.readFileSync(logPath, "utf8");
 }
 
+function ReadHubBuildLogs() {
+    const logPath = filePath.GetHubBuildLogPath();
+
+    if (!fs.existsSync(logPath)) {
+        return "";
+    }
+
+    return fs.readFileSync(logPath, "utf8");
+}
+
+function StartHubBuild() {
+    if (isBuildRunning()) {
+        return {
+            ok: false,
+            message: "Build is already running.",
+        };
+    }
+
+    const hubRepoPath = filePath.GetHubRootPath();
+
+    if (!fs.existsSync(hubRepoPath)) {
+        return {
+            ok: false,
+            message: `Hub repository path does not exist: ${hubRepoPath}`,
+        };
+    }
+
+    const logPath = filePath.GetHubBuildLogPath();
+
+    const logStream = fs.createWriteStream(logPath, {
+        flags: "a",
+    });
+
+    setBuildRunning(true);
+    setBuildStatus("building");
+
+    appendLog(logStream, `[hub] cwd: ${hubRepoPath}\n`);
+    appendLog(logStream, `[hub] Starting: make build\n`);
+
+    const child = spawn("make", ["build"], {
+        cwd: hubRepoPath,
+        shell: false,
+    });
+
+    child.stdout.on("data", (data) => {
+        appendLog(logStream, data.toString());
+    });
+
+    child.stderr.on("data", (data) => {
+        appendLog(logStream, data.toString());
+    });
+
+    child.on("error", (error) => {
+        appendLog(logStream, `\n[error] ${error.message}\n`);
+        setBuildStatus("failed");
+        setBuildRunning(false);
+        logStream.end();
+    });
+
+    child.on("close", (code) => {
+        if (code === 0) {
+            appendLog(
+                logStream,
+                `[hub] make build finished with exit code 0\n`,
+            );
+            setBuildStatus("success");
+        } else {
+            appendLog(
+                logStream,
+                `[hub] make build finished with exit code ${code}\n`,
+            );
+            setBuildStatus("failed");
+        }
+
+        setBuildRunning(false);
+        logStream.end();
+    });
+
+    return {
+        ok: true,
+        message: "Hub build started.",
+    };
+}
 function StartBuild() {
     if (isBuildRunning()) {
         return {
@@ -123,5 +205,7 @@ function appendLog(stream, message) {
 
 module.exports = {
     StartBuild,
+    StartHubBuild,
     ReadBuildLogs,
+    ReadHubBuildLogs,
 };

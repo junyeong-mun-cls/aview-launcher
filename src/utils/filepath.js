@@ -49,6 +49,13 @@ function GetBuildLogPath() {
     return p;
 }
 
+/** 허브 레포 루트 기준 `runtime/build.log` (aview의 GetBuildLogPath와 동일한 구조) */
+function GetHubBuildLogPath() {
+    const p = path.join(GetRuntimePath(), "build.hub.log");
+    ensureLogFileAt(p);
+    return p;
+}
+
 function GetBinPath() {
     return path.join(GetRootPath(), "build", "bin");
 }
@@ -70,6 +77,7 @@ module.exports = {
     GetBinPath,
     GetAppLogPath,
     GetBuildLogPath,
+    GetHubBuildLogPath,
     GetBuildPath,
     GetRuntimePath,
 };
