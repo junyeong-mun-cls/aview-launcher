@@ -1,3 +1,4 @@
+const fs = require("fs");
 const filePath = require("../utils/filepath");
 
 let runningTarget = null;

@@ -1,3 +1,6 @@
+const { isValidBranchName } = require("../utils/validator");
+const filePath = require("../utils/filepath");
+
 const hubService = require("../services/avewhubService");
 const statusService = require("../services/statusService");
 const gitService = require("../services/gitService");
@@ -15,7 +18,7 @@ function GetStatus(req, res) {
     });
 }
 
-function SwitchAndPull(req, res) {
+async function SwitchAndPull(req, res) {
     const branch = (req.body.branch || "").trim();
 
     if (!branch) {
@@ -25,11 +28,31 @@ function SwitchAndPull(req, res) {
         });
     }
 
-    return res.json({
-        ok: true,
-        message: "aviewhub switch & pull dummy success",
-        branch,
-    });
+    if (!isValidBranchName(branch)) {
+        return res.status(400).json({
+            ok: false,
+            message: "Invalid branch name.",
+        });
+    }
+
+    try {
+        const result = await gitService.SwitchAndPullBranch(
+            branch,
+            filePath.GetHubRootPath(),
+        );
+
+        if (!result.ok) {
+            return res.status(500).json(result);
+        }
+
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "Unexpected server error.",
+            error: error.message,
+        });
+    }
 }
 
 function StartBuild(req, res) {

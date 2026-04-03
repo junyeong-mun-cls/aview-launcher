@@ -3,15 +3,13 @@ const { execFileSync } = require("child_process");
 const { runCommand } = require("../utils/runCommand");
 const filePath = require("../utils/filepath");
 
-function GetCurrentBranch() {
-    const cwd = filePath.GetRootPath();
-
+function GetCurrentBranch(repoPath) {
     try {
         const branch = execFileSync(
             "git",
             ["rev-parse", "--abbrev-ref", "HEAD"],
             {
-                cwd,
+                repoPath,
                 encoding: "utf8",
                 maxBuffer: 1024 * 1024,
             },
@@ -22,7 +20,7 @@ function GetCurrentBranch() {
                 "git",
                 ["rev-parse", "--short", "HEAD"],
                 {
-                    cwd,
+                    repoPath,
                     encoding: "utf8",
                     maxBuffer: 1024 * 1024,
                 },
@@ -37,9 +35,8 @@ function GetCurrentBranch() {
     }
 }
 
-async function SwitchAndPullBranch(branch) {
-    const repoPath = filePath.GetRootPath();
-
+async function SwitchAndPullBranch(branchName, repoPath) {
+    console.log("SwitchAndPullBranch", branchName, repoPath);
     // 1. fetch
     const fetchResult = await runCommand("git", ["fetch", "--all"], {
         cwd: repoPath,
@@ -56,7 +53,7 @@ async function SwitchAndPullBranch(branch) {
     }
 
     // 2. switch
-    const switchResult = await runCommand("git", ["switch", branch], {
+    const switchResult = await runCommand("git", ["switch", branchName], {
         cwd: repoPath,
     });
 
@@ -71,7 +68,7 @@ async function SwitchAndPullBranch(branch) {
     }
 
     // 3. pull
-    const pullResult = await runCommand("git", ["pull", "-r"], {
+    const pullResult = await runCommand("git", ["pull", "-r", branchName], {
         cwd: repoPath,
     });
 
@@ -88,7 +85,7 @@ async function SwitchAndPullBranch(branch) {
     return {
         ok: true,
         message: "Fetch → Switch → Pull completed successfully.",
-        branch,
+        branch: branchName,
         currentBranch: GetCurrentBranch(repoPath),
 
         fetch: {

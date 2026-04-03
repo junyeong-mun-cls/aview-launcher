@@ -5,6 +5,15 @@ function GetRootPath() {
     return process.env.AVIEW_REPO_PATH || path.join(__dirname, "..", "..");
 }
 
+/** Aviewhub 전용 git 작업 경로. 미설정 시 AVIEW_REPO_PATH와 동일하게 동작 */
+function GetHubRootPath() {
+    return (
+        process.env.AVIEWHUB_REPO_PATH ||
+        process.env.AVIEW_REPO_PATH ||
+        path.join(__dirname, "..", "..")
+    );
+}
+
 function GetRuntimePath() {
     const p = path.join(GetRootPath(), "runtime");
     EnsureDir(p);
@@ -56,6 +65,7 @@ function EnsureDir(p) {
 
 module.exports = {
     GetRootPath,
+    GetHubRootPath,
     EnsureDir,
     GetBinPath,
     GetAppLogPath,

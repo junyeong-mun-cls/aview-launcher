@@ -1,4 +1,5 @@
 const { isValidBranchName } = require("../utils/validator");
+const filePath = require("../utils/filepath");
 
 const gitService = require("../services/gitService");
 const buildService = require("../services/buildService");
@@ -75,7 +76,10 @@ async function SwitchAndPull(req, res) {
     }
 
     try {
-        const result = await gitService.SwitchAndPullBranch(branch);
+        const result = await gitService.SwitchAndPullBranch(
+            branch,
+            filePath.GetRootPath(),
+        );
 
         if (!result.ok) {
             return res.status(500).json(result);
