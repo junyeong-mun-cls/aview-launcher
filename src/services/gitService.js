@@ -1,15 +1,16 @@
-const path = require("path");
 const { execFileSync } = require("child_process");
 const { runCommand } = require("../utils/runCommand");
 const filePath = require("../utils/filepath");
 
 function GetCurrentBranch(repoPath) {
+    const cwd = repoPath ?? filePath.GetRootPath();
+
     try {
         const branch = execFileSync(
             "git",
             ["rev-parse", "--abbrev-ref", "HEAD"],
             {
-                repoPath,
+                cwd,
                 encoding: "utf8",
                 maxBuffer: 1024 * 1024,
             },
@@ -20,7 +21,7 @@ function GetCurrentBranch(repoPath) {
                 "git",
                 ["rev-parse", "--short", "HEAD"],
                 {
-                    repoPath,
+                    cwd,
                     encoding: "utf8",
                     maxBuffer: 1024 * 1024,
                 },
@@ -36,10 +37,10 @@ function GetCurrentBranch(repoPath) {
 }
 
 async function SwitchAndPullBranch(branchName, repoPath) {
-    console.log("SwitchAndPullBranch", branchName, repoPath);
+    const cwd = repoPath ?? filePath.GetRootPath();
     // 1. fetch
     const fetchResult = await runCommand("git", ["fetch", "--all"], {
-        cwd: repoPath,
+        cwd,
     });
 
     if (fetchResult.code !== 0) {
@@ -54,7 +55,7 @@ async function SwitchAndPullBranch(branchName, repoPath) {
 
     // 2. switch
     const switchResult = await runCommand("git", ["switch", branchName], {
-        cwd: repoPath,
+        cwd,
     });
 
     if (switchResult.code !== 0) {
@@ -68,8 +69,8 @@ async function SwitchAndPullBranch(branchName, repoPath) {
     }
 
     // 3. pull
-    const pullResult = await runCommand("git", ["pull", "-r", branchName], {
-        cwd: repoPath,
+    const pullResult = await runCommand("git", ["pull", "-r"], {
+        cwd,
     });
 
     if (pullResult.code !== 0) {
@@ -86,7 +87,7 @@ async function SwitchAndPullBranch(branchName, repoPath) {
         ok: true,
         message: "Fetch → Switch → Pull completed successfully.",
         branch: branchName,
-        currentBranch: GetCurrentBranch(repoPath),
+        currentBranch: GetCurrentBranch(cwd),
 
         fetch: {
             stdout: fetchResult.stdout,

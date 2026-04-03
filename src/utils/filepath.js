@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 function GetRootPath() {
-    return process.env.AVIEW_REPO_PATH || path.join(__dirname, "..", "..");
+    return process.env.AVIEW_REPO_PATH || "/cls/ws/dng6";
 }
 
 /** Aviewhub 전용 git 작업 경로. 미설정 시 AVIEW_REPO_PATH와 동일하게 동작 */
